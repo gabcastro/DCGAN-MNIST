@@ -1,0 +1,4 @@
+venv
+src/MNIST
+
+.DS_Store

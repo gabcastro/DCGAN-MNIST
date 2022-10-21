@@ -1,0 +1,3 @@
+pip3 install torchvision
+pip3 install torchsummary
+pip3 install matplotlib
