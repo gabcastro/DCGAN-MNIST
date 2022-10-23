@@ -2,10 +2,11 @@ from dataloader import DataLoader
 from dataset import Dataset
 from discriminator import Discriminator
 from generator import Generator
+from loss import *
 
 import matplotlib.pyplot as plt
 
-from torch import nn 
+from torch import nn, optim
 from torchvision.utils import make_grid
 from torchsummary import summary
 
@@ -59,6 +60,9 @@ def main():
 
     D = D.apply(weights_init)
     G = G.apply(weights_init)
+
+    D_opt = optim.Adam(D.parameters(), lr = lr, betas = (beta_1, beta_2))
+    G_opt = optim.Adam(G.parameters(), lr = lr, betas = (beta_1, beta_2))
 
 if __name__ == "__main__":
     main()
