@@ -29,3 +29,25 @@ LeakyReLU()                                                             # (bs, 6
 Flatten()                                                               # (bs, 64)
 Linear(in_features=64, out_features=1)                                  # (bs, 1)
 ```
+
+### Network: Generator
+
+```python
+noise_dim = 64
+input: (bs, noise_dim) --> (bs, channel, height, width) -> (bs, 64, 1, 1)
+    ...
+ConvTranspose2d(in_channel=z_dim, out_channel=256, kernel_size=(3,3), stride=2)             # (bs, 256, 3, 3)
+BatchNorm2d()                                                                               # (bs, 256, 3, 3)
+ReLU()                                                                                      # (bs, 256, 3, 3)
+    ...
+ConvTranspose2d(in_channel=256, out_channel=128, kernel_size=(4,4), stride=2)               # (bs, 128, 6, 6)
+BatchNorm2d()                                                                               # (bs, 128, 6, 6)
+ReLU()                                                                                      # (bs, 128, 6, 6)
+    ...
+ConvTranspose2d(in_channel=128, out_channel=64, kernel_size=(3,3), stride=2)                # (bs, 64, 13, 13)
+BatchNorm2d()                                                                               # (bs, 64, 13, 13)
+ReLU()                                                                                      # (bs, 64, 13, 13)
+    ...
+ConvTranspose2d(in_channel=64, out_channel=1, kernel_size=(4,4), stride=2)                  # (bs, 1, 28, 28)
+Tanh()
+```
