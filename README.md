@@ -9,7 +9,7 @@ A Deep Convolutional Generative Adversarial Network using PyTorch to generate ha
 
 ![Net](docs/DCGAN.png)
 
-### Network: Descriminator
+### Network: Discriminator
 
 ```python
 input: (bs, 1, 28, 28)

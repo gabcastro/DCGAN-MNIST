@@ -5,8 +5,9 @@ from generator import Generator
 from loss import *
 
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
-from torch import nn, optim
+from torch import nn, optim, randn
 from torchvision.utils import make_grid
 from torchsummary import summary
 
@@ -32,7 +33,7 @@ def main():
     beta_1 = 0.5
     beta_2 = 0.99
 
-    epochs = 20
+    epochs = 1
 
     ds = Dataset()
     ds_mnist = ds.load_mnist()
@@ -63,6 +64,57 @@ def main():
 
     D_opt = optim.Adam(D.parameters(), lr = lr, betas = (beta_1, beta_2))
     G_opt = optim.Adam(G.parameters(), lr = lr, betas = (beta_1, beta_2))
+
+    for i in range(epochs):
+
+        total_d_loss = 0.0
+        total_g_loss = 0.0
+
+        for real_img, _ in tqdm(dl.trainloader):
+
+            real_image = real_img.to(device)
+            noise = randn(dl.batch_size, noise_dim, device=device)
+
+            # find loss and update weights for D
+
+            D_opt.zero_grad()
+
+            fake_img = G(noise)
+            D_pred = D(fake_img)
+            D_fake_loss = fake_loss(D_pred)
+
+            D_pred = D(real_image)
+            D_real_loss = real_loss(D_pred)
+
+            D_loss = (D_fake_loss + D_real_loss)/2
+
+            total_d_loss += D_loss.item()
+
+            D_loss.backward()
+            D_opt.step()
+
+            # find loss and update weights for G
+
+            G_opt.zero_grad()
+
+            noise = randn(dl.batch_size, noise_dim, device=device)
+
+            fake_img = G(noise)
+            D_pred = D(fake_img)
+            G_loss = real_loss(D_pred)
+
+            total_g_loss += G_loss.item()
+
+            G_loss.backward()
+            G_opt.step()
+
+        avg_d_loss = total_d_loss / len(dl.trainloader)
+        avg_g_loss = total_g_loss / len(dl.trainloader)
+
+        print(f'Epoch {i+1} / D loss: {avg_d_loss} / G loss: {avg_g_loss}')
+
+        show_tensor_images(fake_img)
+
 
 if __name__ == "__main__":
     main()
